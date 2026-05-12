@@ -1,0 +1,195 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: v2506                                 |
+|  \\    /   O peration     | snappyHexMeshDict                               |
+|   \\  /    A nd           |                                                 |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// ************************************************************************* //
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+
+// ------------------------------------------------------------------------- //
+// Geometry
+// ------------------------------------------------------------------------- //
+
+geometry
+{
+    enclosure.stl
+    {
+        type triSurfaceMesh;
+        name enclosure;
+    }
+
+    hatt.stl
+    {
+        type triSurfaceMesh;
+        name hatt;
+    }
+}
+
+
+// ------------------------------------------------------------------------- //
+// Castellated mesh controls
+// ------------------------------------------------------------------------- //
+
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      10000000;
+    minRefinementCells  0;
+    maxLoadUnbalance    0.10;
+
+    nCellsBetweenLevels 3;
+
+    features
+    (
+        {
+            file "enclosure.eMesh";
+            level 1;
+        }
+
+        {
+            file "hatt.eMesh";
+            level 5;
+        }
+    );
+
+    refinementSurfaces
+    {
+        enclosure
+        {
+            level (1 1);
+
+            patchInfo
+            {
+                type wall;
+            }
+        }
+
+        hatt
+        {
+            level (3 4);
+
+            patchInfo
+            {
+                type wall;
+            }
+        }
+    }
+
+    resolveFeatureAngle 30;
+
+    refinementRegions
+    {
+    }
+
+    locationInMesh (1000 1000 300);
+
+    allowFreeStandingZoneFaces false;
+}
+
+
+// ------------------------------------------------------------------------- //
+// Snap controls
+// ------------------------------------------------------------------------- //
+
+snapControls
+{
+    nSmoothPatch 5;
+    tolerance 2.0;
+    nSolveIter 100;
+    nRelaxIter 8;
+
+    nFeatureSnapIter 15;
+
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+
+// ------------------------------------------------------------------------- //
+// Layer controls
+// ------------------------------------------------------------------------- //
+
+addLayersControls
+{
+    relativeSizes true;
+
+    layers
+    {
+        hatt
+        {
+            nSurfaceLayers 3;
+        }
+    }
+
+    expansionRatio      1.2;
+    finalLayerThickness 0.3;
+    minThickness        0.1;
+
+    nGrow 0;
+
+    featureAngle 60;
+
+    slipFeatureAngle 30;
+    nRelaxIter 5;
+    nSmoothSurfaceNormals 3;
+    nSmoothNormals 3;
+    nSmoothThickness 10;
+
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90;
+
+    nBufferCellsNoExtrude 0;
+
+    nLayerIter 50;
+}
+
+
+// ------------------------------------------------------------------------- //
+// Mesh quality controls
+// ------------------------------------------------------------------------- //
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    relaxed
+    {
+        maxNonOrtho 75;
+    }
+}
+
+
+// ------------------------------------------------------------------------- //
+// Write flags
+// ------------------------------------------------------------------------- //
+
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields
+);
+
+
+// ------------------------------------------------------------------------- //
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

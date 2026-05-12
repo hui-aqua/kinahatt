@@ -1,0 +1,60 @@
+# =========================================================
+# OpenFOAM temporary/generated files
+# =========================================================
+
+# Time directories
+[1-9]*/
+[0-9]*.[0-9]*/
+
+# Keep template initial condition folder
+!0.orig/
+
+# Mesh and decomposition
+constant/polyMesh/
+processor*/
+
+# snappyHexMesh refinement outputs
+0/cellLevel
+0/pointLevel
+
+# Logs
+log.*
+*.log
+
+# ParaView
+*.foam
+
+# =========================================================
+# Large/generated geometry helper files
+# =========================================================
+
+constant/extendedFeatureEdgeMesh/
+
+# Intermediate geometry split files
+constant/triSurface/*.obj
+constant/triSurface/*.vtp
+
+# Screenshots
+constant/triSurface/*.png
+
+# =========================================================
+# Results
+# =========================================================
+
+results/
+
+# =========================================================
+# OS/editor junk
+# =========================================================
+
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# =========================================================
+# Optional: ignore original large CAD/STL archives
+# Uncomment if needed
+# =========================================================
+
+# ORG_geo/

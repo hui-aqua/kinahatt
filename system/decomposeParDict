@@ -1,6 +1,6 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: OpenCFD v2506                         |
+| \\      /  F ield         | OpenFOAM: v2506                                 |
 |  \\    /   O peration     |                                                 |
 |   \\  /    A nd           |                                                 |
 |    \\/     M anipulation  |                                                 |
@@ -11,32 +11,13 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      controlDict;
+    object      decomposeParDict;
 }
 
-application     simpleFoam;
+// ************************************************************************* //
 
-startFrom       startTime;
-startTime       0;
+numberOfSubdomains 10;
 
-stopAt          endTime;
-endTime         5000;
+method          scotch;
 
-deltaT          1;
-
-writeControl    timeStep;
-writeInterval   10;
-
-purgeWrite      3;
-
-writeFormat     binary;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
+// ************************************************************************* //

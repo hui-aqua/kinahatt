@@ -27,19 +27,30 @@ addLayers       false;
 
 geometry
 {
-    enclosure.stl
+    outsideWall.stl
     {
         type triSurfaceMesh;
-        name enclosure;
+        name outside;
     }
 
-    hatt.stl
+    pipeInlet.stl
+    {
+        type triSurfaceMesh;
+        name inlet;
+    }
+
+    pipeWall.stl
+    {
+        type triSurfaceMesh;
+        name pipeWall;
+    }
+
+    A_buet_hat.stl
     {
         type triSurfaceMesh;
         name hatt;
     }
 }
-
 
 // ------------------------------------------------------------------------- //
 // Castellated mesh controls
@@ -57,21 +68,51 @@ castellatedMeshControls
     features
     (
         {
-            file "enclosure.eMesh";
+            file "outsideWall.eMesh";
             level 1;
         }
-
+    
         {
-            file "hatt.eMesh";
-            level 5;
+            file "pipeInlet.eMesh";
+            level 2;
+        }
+    
+        {
+            file "pipeWall.eMesh";
+            level 2;
+        }
+    
+        {
+            file "A_buet_hat.eMesh";
+            level 4;
         }
     );
 
     refinementSurfaces
     {
-        enclosure
+        outside
         {
             level (1 1);
+
+            patchInfo
+            {
+                type patch;
+            }
+        }
+
+        inlet
+        {
+            level (2 2);
+
+            patchInfo
+            {
+                type patch;
+            }
+        }
+
+        pipeWall
+        {
+            level (2 2);
 
             patchInfo
             {
@@ -81,7 +122,7 @@ castellatedMeshControls
 
         hatt
         {
-            level (3 4);
+            level (4 5);
 
             patchInfo
             {

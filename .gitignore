@@ -11,6 +11,7 @@
 
 # Mesh and decomposition
 constant/polyMesh/
+constant/triSurface/
 processor*/
 
 # snappyHexMesh refinement outputs

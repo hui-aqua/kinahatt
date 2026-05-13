@@ -1,3 +1,11 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2506                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
 FoamFile
 {
     version 2.0;
@@ -6,7 +14,7 @@ FoamFile
     object surfaceFeatureExtractDict;
 }
 
-enclosure.stl
+outsideWall.stl
 {
     extractionMethod extractFromSurface;
 
@@ -18,7 +26,31 @@ enclosure.stl
     writeObj yes;
 }
 
-hatt.stl
+pipeInlet.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+pipeWall.stl
+{
+    extractionMethod extractFromSurface;
+
+    extractFromSurfaceCoeffs
+    {
+        includedAngle 150;
+    }
+
+    writeObj yes;
+}
+
+A_buet_hat.stl
 {
     extractionMethod extractFromSurface;
 

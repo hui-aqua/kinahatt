@@ -1,63 +1,161 @@
-# Flow Over Hat (OpenFOAM)
+# Kinahatt OpenFOAM Case
 
-This repository is prepared for an OpenFOAM CFD project to simulate airflow over a hat geometry.
+CFD case for an immersed hat-shaped structure inside a cylindrical water domain using OpenFOAM v2506.
 
-The geometry file is **not added yet**. Once you upload it, this project is ready for meshing and solving.
+---
 
-## Project Layout
+# OpenFOAM Version
 
-```text
-flow-over-hat/
-├── 0.orig/                # Initial fields (U, p, k, omega, nut, etc.)
-├── constant/
-│   ├── geometry/          # Optional CAD staging (STEP/IGES/STL source copies)
-│   ├── triSurface/        # STL/OBJ used by snappyHexMesh
-│   └── polyMesh/          # Generated mesh appears here after meshing
-├── system/                # Control dictionaries (controlDict, fvSchemes, fvSolution...)
-├── scripts/               # Helper scripts (mesh, run, clean)
-├── results/               # Post-processing exports, sampled data, figures
-└── docs/                  # Notes, assumptions, setup decisions
+```text id="6m6q5i"
+OpenFOAM v2506
 ```
 
-## Intended Workflow
+---
 
-1. Add hat geometry to `constant/triSurface/` (typically `hat.stl`).
-2. Add/update OpenFOAM dictionaries in `system/`.
-3. Create base mesh (`blockMesh`).
-4. Refine around geometry (`snappyHexMesh`).
-5. Run solver (likely `simpleFoam` for steady external flow).
-6. Post-process in ParaView.
+# Project Structure
 
-## Geometry Requirements (when you upload)
+```text id="6d8fgn"
+kinahatt/
+├── 0.orig/                    # Initial field templates
+├── constant/
+│   ├── polyMesh/              # Generated mesh
+│   ├── triSurface/            # STL geometry files
+│   └── extendedFeatureEdgeMesh/
+├── ORG_geo/                   # Original geometry archive
+├── system/
+│   ├── blockMeshDict
+│   ├── controlDict
+│   ├── fvSchemes
+│   ├── fvSolution
+│   ├── meshQualityDict
+│   ├── snappyHexMeshDict
+│   └── surfaceFeatureExtractDict
+├── scripts/
+├── results/
+└── README.md
+```
 
-- Preferred: watertight **STL** in meters.
-- Ensure outward-facing normals.
-- Keep model near origin for easier domain setup.
-- Recommended filename: `hat.stl`.
+---
 
-## Suggested OpenFOAM Setup (external aerodynamics)
+# Geometry Structure
 
-- Solver: `simpleFoam`
-- Turbulence model: `kOmegaSST` (good default for separated external flows)
-- Boundary style:
-  - Inlet: fixed velocity
-  - Outlet: pressure outlet
-  - Sides/top: slip or symmetry (depends on domain size)
-  - Ground: wall (no-slip) if ground effects are modeled
-  - Hat: wall (no-slip)
+The CFD domain is built using separated STL surfaces.
 
-## Next Steps After Geometry Upload
+```text id="c5kxqv"
+outsideWall.stl
+    Open outer cylindrical boundary
 
-When you upload the geometry, we can immediately add:
+pipeInlet.stl
+    Pipe inflow boundary
 
-- `system/blockMeshDict`
-- `system/snappyHexMeshDict`
-- `system/controlDict`, `fvSchemes`, `fvSolution`
-- `constant/transportProperties`, `constant/turbulenceProperties`
-- `0.orig/` field files (`U`, `p`, `k`, `omega`, `nut`)
-- Optional run script for one-command meshing + solve
+pipeWall.stl
+    Solid pipe wall
 
-## Notes
+A_buet_hat.stl
+    Internal immersed solid structure
+```
 
-- This repo currently contains structure and documentation only.
-- Case dictionaries are intentionally not guessed yet because they depend on hat size/orientation and target Reynolds number.
+---
+
+# Mesh Strategy
+
+Mesh generation uses:
+
+* `blockMesh`
+* `surfaceFeatureExtract`
+* `snappyHexMesh`
+
+The final fluid region is:
+
+```text id="8nnwzn"
+inside outsideWall
+AND
+outside A_buet_hat
+```
+
+---
+
+# Boundary Patch Strategy
+
+| Patch    | Type          |
+| -------- | ------------- |
+| inlet    | inflow        |
+| outside  | open boundary |
+| pipeWall | wall          |
+| hatt     | wall          |
+
+---
+
+# Geometry Placement
+
+Working STL files are located in:
+
+```text id="9e5j0k"
+constant/triSurface/
+```
+
+Original geometry archive:
+
+```text id="utwn1j"
+ORG_geo/
+```
+
+---
+
+# Current Mesh Workflow
+
+## Clean mesh
+
+```bash id="dr4tbv"
+rm -rf constant/polyMesh
+rm -rf 0
+cp -r 0.orig 0
+```
+
+## Generate feature edges
+
+```bash id="cmup2w"
+surfaceFeatureExtract
+```
+
+## Generate background mesh
+
+```bash id="m5e6ws"
+blockMesh
+```
+
+## Generate snappy mesh
+
+```bash id="vzb1pw"
+snappyHexMesh -overwrite | tee log.snappy
+```
+
+## Check mesh quality
+
+```bash id="0w8xrk"
+checkMesh
+```
+
+---
+
+# Visualization
+
+```bash id="avq0z0"
+paraFoam
+```
+
+or
+
+```bash id="x2prht"
+touch case.foam
+paraview case.foam
+```
+
+---
+
+# Notes
+
+* Mesh generated successfully with OpenFOAM v2506
+* Immersed solid subtraction working correctly
+* Structured STL workflow simplifies patch assignment
+* Large/generated files excluded using `.gitignore`

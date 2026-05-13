@@ -14,20 +14,30 @@ FoamFile
     object      controlDict;
 }
 
+// ************************************************************************* //
+
 application     simpleFoam;
 
 startFrom       startTime;
+
 startTime       0;
 
 stopAt          endTime;
+
 endTime         5000;
 
 deltaT          1;
 
+
+// ------------------------------------------------------------------------- //
+// Write controls
+// ------------------------------------------------------------------------- //
+
 writeControl    timeStep;
+
 writeInterval   10;
 
-purgeWrite      3;
+purgeWrite      0;
 
 writeFormat     binary;
 
@@ -40,3 +50,89 @@ timeFormat      general;
 timePrecision   6;
 
 runTimeModifiable true;
+
+
+// ------------------------------------------------------------------------- //
+// Runtime function objects
+// ------------------------------------------------------------------------- //
+
+functions
+{
+
+    // ------------------------------------------------------------- //
+    // Forces on hatt
+    // ------------------------------------------------------------- //
+
+    forces
+    {
+        type forces;
+
+        libs ("libforces.so");
+
+        patches (hatt);
+
+        rho rhoInf;
+
+        rhoInf 1000;
+
+        CofR (1000 1000 500);
+
+        writeControl timeStep;
+
+        writeInterval 10;
+    }
+
+
+    // ------------------------------------------------------------- //
+    // Force coefficients
+    // ------------------------------------------------------------- //
+
+    forceCoeffs
+    {
+        type forceCoeffs;
+
+        libs ("libforces.so");
+
+        patches (hatt);
+
+        rho rhoInf;
+
+        rhoInf 1000;
+
+        liftDir (1 0 0);
+
+        dragDir (0 0 1);
+
+        CofR (1000 1000 500);
+
+        magUInf 2;
+
+        lRef 1000;
+
+        Aref 1000000;
+
+        writeControl timeStep;
+
+        writeInterval 10;
+    }
+
+
+    // ------------------------------------------------------------- //
+    // Wall shear stress
+    // ------------------------------------------------------------- //
+
+    wallShearStress
+    {
+        type wallShearStress;
+
+        libs ("libfieldFunctionObjects.so");
+
+        patches (hatt);
+
+        writeControl timeStep;
+
+        writeInterval 10;
+    }
+}
+
+// ************************************************************************* //

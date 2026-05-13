@@ -1,0 +1,77 @@
+#!/bin/bash
+
+set -e
+
+echo "=================================================="
+echo " Cleaning old results"
+echo "=================================================="
+
+# Remove processor folders
+rm -rf processor*
+
+# Remove time folders except 0 and 0.orig
+find . -maxdepth 1 -type d -regex './[0-9.]+' \
+! -name "0" \
+! -name "0.orig" \
+-exec rm -rf {} +
+
+# Remove postProcessing
+rm -rf postProcessing
+
+# Remove logs
+rm -f log.*
+
+# Remove mesh
+rm -rf constant/polyMesh
+
+echo "=================================================="
+echo " Running blockMesh"
+echo "=================================================="
+
+blockMesh | tee log.blockMesh
+
+echo "=================================================="
+echo " Extracting features"
+echo "=================================================="
+
+surfaceFeatureExtract | tee log.surfaceFeatureExtract
+
+echo "=================================================="
+echo " Running snappyHexMesh"
+echo "=================================================="
+
+snappyHexMesh -overwrite | tee log.snappyHexMesh
+
+echo "=================================================="
+echo " Checking mesh"
+echo "=================================================="
+
+checkMesh | tee log.checkMesh
+
+echo "=================================================="
+echo " Decomposing mesh"
+echo "=================================================="
+
+decomposePar | tee log.decomposePar
+
+echo "=================================================="
+echo " Running simpleFoam in parallel"
+echo "=================================================="
+
+mpirun -np 10 simpleFoam -parallel | tee log.simpleFoam
+
+echo "=================================================="
+echo " Reconstructing solution"
+echo "=================================================="
+
+reconstructPar | tee log.reconstructPar
+
+echo "=================================================="
+echo " Creating ParaView file"
+echo "=================================================="
+
+touch tem.foam
+
+echo "=================================================="
+echo " DONE"
+echo "=================================================="
